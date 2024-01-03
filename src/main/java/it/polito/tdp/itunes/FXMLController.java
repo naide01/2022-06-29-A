@@ -35,10 +35,10 @@ public class FXMLController {
     private Button btnPercorso; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA1"
-    private ComboBox<?> cmbA1; // Value injected by FXMLLoader
+    private ComboBox<Album> cmbA1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA2"
-    private ComboBox<?> cmbA2; // Value injected by FXMLLoader
+    private ComboBox<Album> cmbA2; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtN"
     private TextField txtN; // Value injected by FXMLLoader
@@ -61,6 +61,22 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	String input = txtN.getText();
+    	if (input == "") {
+    		txtResult.setText("Inserire un numero! ");
+    	}
+    	try {
+    		int inputNum = Integer.parseInt(input);
+    		model.creaGrafo(inputNum);
+    		int numV = model.getNumVertici();
+    		int numE = model.getNumArchi();
+    		
+    		txtResult.setText("Grafo creato correttamente! \n");
+    		txtResult.appendText("#vertici " + numV + "\n" + "#archi " + numE + "\n");
+    		
+    	}catch (NumberFormatException e) {
+    		txtResult.setText("Non valido, devi inserire un numero!" );
+    	}
     	
     }
 
@@ -80,5 +96,7 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+//    	this.cmbA1.getItems().setAll(model.getA1);
+//    	this.cmbA2.getItems().setAll(model.getA2);
     }
 }
