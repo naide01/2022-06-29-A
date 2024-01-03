@@ -5,8 +5,10 @@
 package it.polito.tdp.itunes;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import it.polito.tdp.itunes.model.Album;
+import it.polito.tdp.itunes.model.Bilancio;
 import it.polito.tdp.itunes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -51,11 +53,62 @@ public class FXMLController {
 
     @FXML
     void doCalcolaAdiacenze(ActionEvent event) {
+    	Album a = this.cmbA1.getValue();
+    	if (a == null) {
+    		this.txtResult.setText("Inserire un elemento dalla combo box! \n");
+    		return;
+    	}
+    	
+    	List<Bilancio> bilanciAlbum = model.getAdiacenti(a);
+    	this.txtResult.setText("Successori del nodo " + a + "\n");
+    	
+    	for (Bilancio b : bilanciAlbum) {
+    		this.txtResult.appendText(b + "\n");
+    	}
+    	
     	
     }
 
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
+    	
+    	if (!(model.getNumVertici()>0)) {
+    		txtResult.setText("Graph not created.");
+    		return;
+    	}
+    	
+    	String input = this.txtX.getText();
+    	
+    	if (input == "") {
+    		txtResult.setText("Inserire un numero! ");
+    		return;
+    	}
+    	try {
+    		int inputNum = Integer.parseInt(input);
+    		Album source = this.cmbA1.getValue();
+    		Album target = this.cmbA2.getValue();
+    		
+    		if (source == null || target == null) {
+    			this.txtResult.setText("Seleziona un album dalla combo box. ");
+    			return;
+    		}
+    		
+    		List<Album> path = model.getPath(source, target, inputNum);
+    		
+    		if (path.isEmpty()) {
+    			this.txtResult.setText("Nessun percorso tra " + source + " e " + target +"\n");
+    			return;
+    		}
+    		this.txtResult.setText("Stampo il percorso tra " + source + "e "+ target );
+    		
+    		
+    		for (Album a: path) {
+    			this.txtResult.appendText("" + a + "\n");
+    		}
+    		
+    	}catch (NumberFormatException e) {
+    		txtResult.setText("Non valido, devi inserire un numero!" );
+    	}
     	
     }
 
@@ -64,6 +117,7 @@ public class FXMLController {
     	String input = txtN.getText();
     	if (input == "") {
     		txtResult.setText("Inserire un numero! ");
+    		return;
     	}
     	try {
     		int inputNum = Integer.parseInt(input);
@@ -73,6 +127,9 @@ public class FXMLController {
     		
     		txtResult.setText("Grafo creato correttamente! \n");
     		txtResult.appendText("#vertici " + numV + "\n" + "#archi " + numE + "\n");
+    		
+    		this.cmbA1.getItems().setAll(model.getVertici());
+        	this.cmbA2.getItems().setAll(model.getVertici());
     		
     	}catch (NumberFormatException e) {
     		txtResult.setText("Non valido, devi inserire un numero!" );
@@ -96,7 +153,5 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
-//    	this.cmbA1.getItems().setAll(model.getA1);
-//    	this.cmbA2.getItems().setAll(model.getA2);
     }
 }
